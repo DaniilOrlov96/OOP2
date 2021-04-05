@@ -6,6 +6,7 @@ class Student:
         self.finished_courses = []
         self.courses_in_progress = []
         self.grades = {}
+        self.average_grade = []
 
     def add_courses(self, course_name):
         self.finished_courses.append(course_name)
@@ -20,23 +21,25 @@ class Student:
             return 'Ошибка'
 
     def __str__(self):
-        return f" Студенты: " "\n" f" Имя: {self.name}" "\n" f" Фамилия: {self.surname}" "\n" f" Курсы в процессе изучения: {self.courses_in_progress}" "\n" f" Завершенные курсы: {self.finished_courses}"
+        self.courses_in_progress = ",".join(self.courses_in_progress)
+        self.finished_courses = ",".join(self.finished_courses)
+        return f" Студенты: " "\n" f" Имя: {self.name}" "\n" f" Фамилия: {self.surname}" "\n" f" Средняя оценка за домашние задания: {self.average_grade} " "\n" f" Курсы в процессе изучения: {self.courses_in_progress}" "\n" f" Завершенные курсы: {self.finished_courses}"
 
-    def __lt__(self, other, course):
-        if not isinstance(other, Student) and course in self.courses_in_progress:
+    def __lt__(self, other):
+        if not isinstance(other, Student):
             print('Это не студент!')
             return
-        std_grades = self.grades[course]
+        std_grades = self.grades['Python']
         sum = 0
         for i in std_grades:
             sum += i
-            average_grade_1 = (sum / len(self.grades[course]))
-        oth_grades = other.grades[course]
+            self.average_grade = (sum / len(self.grades['Python']))
+        oth_grades = other.grades['Python']
         sum = 0
         for i in oth_grades:
             sum += i
-            average_grade_2 = (sum / len(other.grades[course]))
-        return print(average_grade_1 < average_grade_2)
+            other.average_grade = (sum / len(other.grades['Python']))
+        return print(self.average_grade < other.average_grade)
 
 class Mentor:
     def __init__(self, name, surname):
@@ -44,31 +47,31 @@ class Mentor:
         self.surname = surname
         self.grades = {}
         self.courses_attached = []
-
+        self.average_grade = []
 
 class Lecturer(Mentor):
     def __init__(self, name, surname):
         super().__init__(name, surname)
         self.grades = {}
 
-    def __lt__(self, other, course):
-        if not isinstance(other, Lecturer) and course in self.courses_attached:
+    def __lt__(self, other):
+        if not isinstance(other, Lecturer):
             print('Это не лектор!')
             return
-        lec_grades = self.grades[course]
+        lec_grades = self.grades['Python']
         sum = 0
         for i in lec_grades:
             sum += i
-            average_grade_1 = (sum / len(self.grades[course]))
-        oth_grades = other.grades[course]
+            self.average_grade = (sum / len(self.grades['Python']))
+        oth_grades = other.grades['Python']
         sum = 0
         for i in oth_grades:
             sum += i
-            average_grade_2 = (sum / len(other.grades[course]))
-        return print(average_grade_1 < average_grade_2)
+            other.average_grade = (sum / len(other.grades['Python']))
+        return print(self.average_grade < other.average_grade)
 
     def __str__(self):
-        return f" Лекторы: " "\n" f" Имя: {self.name}" "\n" f" Фамилия: {self.surname}" "\n"
+        return f" Лекторы: " "\n" f" Имя: {self.name}" "\n" f" Фамилия: {self.surname}" "\n" f" Средняя оценка за домашние задания: {self.average_grade} " "\n"
 
 
 class Reviewer(Mentor):
@@ -89,6 +92,7 @@ class Reviewer(Mentor):
 best_student = Student('Roy', 'Eman', 'male')
 best_student.courses_in_progress += ['Python']
 best_student.add_courses('Introduction')
+
 
 worst_student = Student('Emma', 'Loyd', 'female' )
 worst_student.courses_in_progress += ['Python']
@@ -112,12 +116,12 @@ worst_student.rate_lecturer(lecturer_two, 'Python', 5)
 worst_student.rate_lecturer(lecturer_one, 'Python', 8)
 
 
-def average_lecturer_grade (lecturer_list, Python):
-    lecturers_grades = lecturer_one.grades['Python'] + lecturer_two.grades['Python']
+def average_lecturer_grade(lecturer_list, course_name):
+    lecturer_list = lecturer_one.grades[course_name] + lecturer_two.grades[course_name]
     sum = 0
-    for i in lecturers_grades:
-        sum += i
-        all_lecturers_avr_grade = (sum / len(lecturers_grades))
+    for lecturer in lecturer_list:
+        sum += lecturer
+        all_lecturers_avr_grade = (sum / len(lecturer_list))
     return print(f" Средняя оценка лекторов за курс:", all_lecturers_avr_grade)
 
 
@@ -129,19 +133,20 @@ reviewer_one.rate_homework(worst_student, 'Python', 5)
 reviewer_one.rate_homework(worst_student, 'Python', 3)
 
 
-def average_homework_grade (student_list, Python):
-    students_grades = best_student.grades['Python'] + worst_student.grades['Python']
+def average_homework_grade(student_list, course_name):
+    student_list = best_student.grades[course_name] + worst_student.grades[course_name]
     sum = 0
-    for i in students_grades:
-        sum += i
-        all_students_avr_grade = (sum / len(students_grades))
+    for student in student_list:
+        sum += student
+        all_students_avr_grade = (sum / len(student_list))
     return print(f" Средняя оценка студентов за курс:", all_students_avr_grade)
 
 
 average_homework_grade(student_list, 'Python')
 
-best_student.__lt__(worst_student, 'Python')
-lecturer_two.__lt__(lecturer_one, 'Python')
+worst_student < best_student
+
+lecturer_one < lecturer_two
 
 print(best_student)
 print(lecturer_one)
